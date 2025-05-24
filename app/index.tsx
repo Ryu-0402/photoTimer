@@ -59,7 +59,7 @@ const HomeScreen = () => {
 
       <TouchableOpacity // start button
         className='bg-green-800 px-14 py-16 rounded-full mt-10'
-        onPress={() => router.push('/timerScreen')}>
+        onPress={() => router.push('/timer')}>
         <Text className='text-green-300'>開始</Text>
       </TouchableOpacity>
 
