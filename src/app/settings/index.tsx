@@ -1,14 +1,15 @@
-import React,{useState} from 'react'
+import React,{use, useState} from 'react'
 import { View,Text,TouchableOpacity,Image,Alert } from 'react-native'
 import { useRouter,useLocalSearchParams } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import WheelColorPicker from 'react-native-wheel-color-picker';
+import { useTimerSettings } from '../stores/useTimerSettings';
 
 const settings = () => {
     const router = useRouter();
     const {h,m,s} = useLocalSearchParams();
-    const [imageUri, setImageUri] = useState<string | null>(null);
-    const [selectedColor, setSelectedColor] = useState<string>('#FFFFFF');
+    const {imageUri, setImageUri} = useTimerSettings();
+    const {selectedColor, setSelectedColor} = useTimerSettings();
     const [isColorPickerVisible, setIsColorPickerVisible] = useState<boolean>(false);
 
 

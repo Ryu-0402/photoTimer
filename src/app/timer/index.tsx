@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import {Text, View,TouchableOpacity} from 'react-native'
+import {Text, View,TouchableOpacity, Image} from 'react-native'
 import {useLocalSearchParams, useRouter} from 'expo-router'
+import { useTimerSettings } from '../stores/useTimerSettings';
 
 
 const TimerScreen = () => {
@@ -9,6 +10,13 @@ const TimerScreen = () => {
   const totalSeconds = Number(h) * 3600 + Number(m) * 60 + Number(s);
   const [remainingTime, setRemainingTime] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(true);
+  const {imageUri, selectedColor} = useTimerSettings();
+  const [duration] = useState(totalSeconds);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setStartTime(new Date());
+  }, []);
 
   useEffect(() => {
     if (!isRunning || remainingTime <= 0) return;
@@ -34,11 +42,20 @@ const TimerScreen = () => {
 
   return (
     <View className="flex-1 items-center justify-between bg-blue-100">
-      <View className=' my-20 '>
+      {imageUri && ( // background image
+        <Image
+          source={{ uri: imageUri }}
+          style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
+        />
+      )}
+
+      <View // time
+        className=' my-20 '>
         <Text 
         className=''
-        style={{fontSize: 80, color: 'black'}}>
-        {formatTime(remainingTime)}</Text>
+        style={{fontSize: 80, color: selectedColor}}>
+        {formatTime(remainingTime)}
+        </Text>
       </View>
 
       <View className='flex-row justify-between w-full'>
