@@ -70,7 +70,14 @@ const HomeScreen = () => {
 
       <TouchableOpacity // setting button
         className='bg-green-800 px-14 py-16 mt-10'
-        onPress={() => router.push('/settings')}>
+        onPress={() => router.push({
+          pathname:'/settings',
+          params: {
+            h: selectedHour.toString(),
+            m: selectedMinute.toString(),
+            s: selectedSecond.toString(),
+          },
+        })}>
         <Text className='text-green-300'>カスタマイズ</Text>
       </TouchableOpacity>
       
