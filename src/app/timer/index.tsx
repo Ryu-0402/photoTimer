@@ -1,81 +1,148 @@
-import React, { useEffect, useState } from 'react'
-import {Text, View,TouchableOpacity, Image} from 'react-native'
-import {useLocalSearchParams, useRouter} from 'expo-router'
-import { useTimerSettings } from '../stores/useTimerSettings';
+import React, { useEffect, useRef, useState } from "react";
+import { Text, View, TouchableOpacity, Image, Dimensions } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useTimerSettings } from "../stores/useTimerSettings";
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const TimerScreen = () => {
   const router = useRouter();
-  const {h,m,s} = useLocalSearchParams();
+  const { h, m, s } = useLocalSearchParams();
   const totalSeconds = Number(h) * 3600 + Number(m) * 60 + Number(s);
   const [remainingTime, setRemainingTime] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(true);
-  const {imageUri, selectedColor} = useTimerSettings();
-  const [duration] = useState(totalSeconds);
-  const [startTime, setStartTime] = useState<Date | null>(null);
+  const { imageUri, selectedColor } = useTimerSettings();
+  const duration = useRef<number>(0);
+  const startTime= useRef<number | null>(null);
+  const pauseTime = useRef<number | null>(null);
+  const timerInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    setStartTime(new Date());
+    startTime.current = Date.now();
+    startTimer();
+    return stopTimer;
   }, []);
 
-  useEffect(() => {
-    if (!isRunning || remainingTime <= 0) return;
-    const timer = setInterval(() => {
-      setRemainingTime(prev => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [isRunning ,remainingTime]);
+  const startTimer = () => {
+    timerInterval.current = setInterval(() => {
+      const now = Date.now();
+      const elapsed = Math.floor((now - startTime.current - duration.current) / 1000);
+      const remaining = totalSeconds - elapsed;
 
-  const toggleRunning = () => {
-    setIsRunning(prev => !prev);
+      if (remaining <= 0) {
+        setRemainingTime(0);
+        setIsRunning(false);
+        stopTimer();
+      } else {
+        setRemainingTime(remaining);
+      }
+    }, 50);
   };
+
+const stopTimer = () => {
+  if (timerInterval.current) {
+    clearInterval(timerInterval.current);
+    timerInterval.current = null;
+  }
+};
+  
+  const toggleRunning = () => {
+  if (isRunning) {
+    stopTimer();
+    pauseTime.current = Date.now();
+    setIsRunning(false);
+  } else {
+    if (pauseTime.current) {
+      duration.current +=  Date.now() - pauseTime.current;
+      pauseTime.current = null;
+    }
+    startTimer();
+    setIsRunning(true);
+  }
+};
 
   const formatTime = (seconds: number) => {
     const hh = String(Math.floor(seconds / 3600));
-    const mm = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-    const ss = String(seconds % 60).padStart(2, '0');
-    if (hh === '0') {
+    const mm = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const ss = String(seconds % 60).padStart(2, "0");
+    if (hh === "0") {
       return `${mm}:${ss}`;
-    }else
-      return `${hh}:${mm}:${ss}`;
+    } else return `${hh}:${mm}:${ss}`;
   };
 
   return (
-    <View className="flex-1 items-center justify-between bg-blue-100">
+    <View className="flex-1 items-center justify-between bg-black">
       {imageUri && ( // background image
         <Image
           source={{ uri: imageUri }}
-          style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
         />
       )}
 
       <View // time
-        className=' my-20 '>
-        <Text 
-        className=''
-        style={{fontSize: 80, color: selectedColor}}>
-        {formatTime(remainingTime)}
+        className=""
+      >
+        <Text
+          className=""
+          style={{
+            fontSize: screenWidth * 0.23,
+            color: selectedColor,
+            marginTop: screenHeight * 0.1,
+          }}
+        >
+          {formatTime(remainingTime)}
         </Text>
       </View>
 
-      <View className='flex-row justify-between w-full'>
-      <TouchableOpacity // cancel button
-              className='bg-green-800 px-5 py-3'
-              onPress={() => router.push('../')}>
-              <Text className='text-green-300'>キャンセル</Text>
-      </TouchableOpacity>
+      <View className="flex-row justify-between w-full">
+        <TouchableOpacity // cancel button
+          className="opacity-50"
+          onPress={() => router.push("../")}
+        >
+          <Text
+            className="text-white"
+            style={{
+              fontSize: screenWidth * 0.08,
+              marginBottom: screenHeight * 0.02,
+            }}
+          >
+            キャンセル
+          </Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity // stop restart button
-              className='bg-green-800 px-5 py-3'
-              onPress={toggleRunning}>
-              <Text className='text-green-300'>
-                {isRunning ? '一時停止' : '再開'}
-              </Text>
-      </TouchableOpacity>
+        <TouchableOpacity className="opacity-50" onPress={toggleRunning}>
+          {isRunning ? (
+            <Text
+              className="text-yellow-600"
+              style={{
+                fontSize: screenWidth * 0.08,
+                marginBottom: screenHeight * 0.02,
+              }}
+            >
+              一時停止
+            </Text>
+          ) : (
+            <Text
+              className="text-green-400"
+              style={{
+                fontSize: screenWidth * 0.08,
+                marginRight: screenWidth * 0.05,
+                marginBottom: screenHeight * 0.02,
+              }}
+            >
+              再開
+            </Text>
+          )}
+        </TouchableOpacity>
       </View>
-     
     </View>
-  )
-}
+  );
+};
 
-export default TimerScreen
+export default TimerScreen;

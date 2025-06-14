@@ -6,8 +6,8 @@ import { useRouter } from "expo-router";
 const hours = Array.from({ length: 24 }, (_, i) => i);
 const minutes = Array.from({ length: 60 }, (_, i) => i);
 const seconds = Array.from({ length: 60 }, (_, i) => i);
-
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -15,12 +15,12 @@ const HomeScreen = () => {
   const [selectedMinute, setSelectedMinute] = useState(5);
   const [selectedSecond, setSelectedSecond] = useState(0);
 
-  return (
-    <View className="flex-1 items-center justify-center bg-black relative">
+  return (<View className="flex-1 items-center justify-center bg-black relative">
+    
       <View className="absolute top-0 items-center justify-center">
        
         <View //h m s
-          className="flex-row bg-black w-full items-center justify-center"
+          className="flex-1 flex-row bg-black items-center justify-center"
           style={{
             columnGap: screenWidth * 0.18,
             marginTop: screenHeight * 0.05,
@@ -47,7 +47,7 @@ const HomeScreen = () => {
         </View>
 
         <View //pickers
-          className="flex-row bg-black"
+          className="flex-1 flex-row bg-black"
           style={{
             columnGap: screenWidth * 0.05,
           }}
@@ -104,7 +104,7 @@ const HomeScreen = () => {
       <View
         className="flex-row absolute bottom-0 justify-between w-full"> 
         <TouchableOpacity // setting button
-          className=" "
+          className=""
           style={{ marginLeft: screenWidth * 0.03}}
           onPress={() =>
             router.push({
@@ -120,7 +120,7 @@ const HomeScreen = () => {
           <Text 
           className="text-white"
           style={{
-            fontSize:screenWidth*0.13,
+            fontSize:screenWidth*0.12,
           }}>設定</Text>
         </TouchableOpacity> 
 
@@ -140,7 +140,7 @@ const HomeScreen = () => {
         >
           <Text 
             className="text-green-400"
-            style={{fontSize:screenWidth * 0.13}}>開始</Text>
+            style={{fontSize:screenWidth * 0.12}}>開始</Text>
         </TouchableOpacity>
       </View>
     </View>
