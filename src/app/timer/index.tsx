@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Text, View, TouchableOpacity, Image, Dimensions } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTimerSettings } from "../stores/useTimerSettings";
+import * as ScreenOrientation from 'expo-screen-orientation';
+import * as Notifications from 'expo-notifications';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -13,14 +15,17 @@ const TimerScreen = () => {
   const [isRunning, setIsRunning] = useState(true);
   const { imageUri, selectedColor } = useTimerSettings();
   const duration = useRef<number>(0);
-  const startTime= useRef<number | null>(null);
+  const startTime= useRef<number>(Date.now());
   const pauseTime = useRef<number | null>(null);
   const timerInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    startTime.current = Date.now();
+    ScreenOrientation.unlockAsync();
     startTimer();
-    return stopTimer;
+    return () => {
+      stopTimer();
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+    };
   }, []);
 
   const startTimer = () => {
@@ -33,6 +38,14 @@ const TimerScreen = () => {
         setRemainingTime(0);
         setIsRunning(false);
         stopTimer();
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: "タイマー終了",
+            body: "設定した時間が経過しました。",
+          },
+          trigger: null, 
+        }).then(() => console.log("Notification scheduled"));
+        
       } else {
         setRemainingTime(remaining);
       }

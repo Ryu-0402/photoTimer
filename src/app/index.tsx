@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect, use } from "react";
 import { Text, View, TouchableOpacity, Dimensions } from "react-native";
 import WheelPickerExpo from "react-native-wheel-picker-expo";
 import { useRouter } from "expo-router";
+import * as ScreenOrientation from "expo-screen-orientation";
+import * as Notifications from "expo-notifications";
 
 const hours = Array.from({ length: 24 }, (_, i) => i);
 const minutes = Array.from({ length: 60 }, (_, i) => i);
@@ -11,6 +13,19 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const router = useRouter();
+  useEffect(() => {
+          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+          const requwestPermissions = async () => {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+              alert('通知の許可が必要です。設定から許可してください。');
+            }
+          };
+          requwestPermissions();
+          return () => {
+              ScreenOrientation.unlockAsync();
+          };
+        },[]);
   const [selectedHour, setSelectedHour] = useState(0);
   const [selectedMinute, setSelectedMinute] = useState(5);
   const [selectedSecond, setSelectedSecond] = useState(0);

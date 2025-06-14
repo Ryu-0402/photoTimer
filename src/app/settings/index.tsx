@@ -1,14 +1,22 @@
-import React,{use, useState} from 'react'
+import React,{useState, useEffect} from 'react'
 import { View,Text,TouchableOpacity,Image,Alert,Dimensions,TouchableWithoutFeedback } from 'react-native'
 import { useRouter,useLocalSearchParams } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import WheelColorPicker from 'react-native-wheel-color-picker';
 import { useTimerSettings } from '../stores/useTimerSettings';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { useNavigation } from 'expo-router';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const settings = () => {
     const router = useRouter();
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        navigation.setOptions?.({gestureEnabled: false});
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);     
+      },[]);
     const {h,m,s} = useLocalSearchParams();
     const {imageUri, setImageUri} = useTimerSettings();
     const {selectedColor, setSelectedColor} = useTimerSettings();
@@ -19,7 +27,7 @@ const settings = () => {
     const pickImage = async () => {
         const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permission.granted) {
-            Alert.alert('Permission to access camera roll is required!');
+            Alert.alert('カメラロールへのアクセスが許可されていません。', '設定から許可してください。');
             return;
         }
 
