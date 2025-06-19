@@ -1,9 +1,10 @@
-import React, { useState,useEffect, use } from "react";
+import React, { useState,useEffect, use, useRef } from "react";
 import { Text, View, TouchableOpacity, Dimensions } from "react-native";
 import WheelPickerExpo from "react-native-wheel-picker-expo";
 import { useRouter } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as Notifications from "expo-notifications";
+import * as Haptics from "expo-haptics";
 
 const hours = Array.from({ length: 24 }, (_, i) => i);
 const minutes = Array.from({ length: 60 }, (_, i) => i);
@@ -13,6 +14,11 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const router = useRouter();
+  const [selectedHour, setSelectedHour] = useState(0);
+  const [selectedMinute, setSelectedMinute] = useState(5);
+  const [selectedSecond, setSelectedSecond] = useState(0);
+  const isNavigating = useRef(false);
+
   useEffect(() => {
           ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
           const requwestPermissions = async () => {
@@ -26,9 +32,11 @@ const HomeScreen = () => {
               ScreenOrientation.unlockAsync();
           };
         },[]);
-  const [selectedHour, setSelectedHour] = useState(0);
-  const [selectedMinute, setSelectedMinute] = useState(5);
-  const [selectedSecond, setSelectedSecond] = useState(0);
+  
+  useEffect(() => {
+    Haptics.selectionAsync();
+  }
+, [selectedHour, selectedMinute, selectedSecond]);       
 
   return (<View className="flex-1 items-center justify-center bg-black relative">
     
@@ -121,7 +129,10 @@ const HomeScreen = () => {
         <TouchableOpacity // setting button
           className=""
           style={{ marginLeft: screenWidth * 0.03}}
-          onPress={() =>
+          onPress={() =>{
+            if (isNavigating.current) return;
+            isNavigating.current = true;
+
             router.push({
               pathname: "/settings",
               params: {
@@ -129,8 +140,11 @@ const HomeScreen = () => {
                 m: selectedMinute.toString(),
                 s: selectedSecond.toString(),
               },
-            })
-          }
+          });
+          setTimeout(() => {
+            isNavigating.current = false;
+          }, 500);
+        }}
         >
           <Text 
           className="text-white"
@@ -142,7 +156,12 @@ const HomeScreen = () => {
         <TouchableOpacity // start button
           className="rounded-full"
           style={{ marginRight: screenWidth * 0.03}}
-          onPress={() =>
+          onPress={() =>{
+            if (selectedHour === 0 && selectedMinute === 0 && selectedSecond === 0) {
+              return;
+            }
+            if (isNavigating.current) return;
+            isNavigating.current = true;
             router.push({
               pathname: "/timer",
               params: {
@@ -151,7 +170,10 @@ const HomeScreen = () => {
                 s: selectedSecond.toString(),
               },
             })
-          }
+            setTimeout(() => {
+              isNavigating.current = false;
+            }, 500);
+          }}
         >
           <Text 
             className="text-green-400"

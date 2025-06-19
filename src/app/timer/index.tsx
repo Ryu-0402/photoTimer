@@ -1,9 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Text, View, TouchableOpacity, Image, Dimensions } from "react-native";
+import { Text, View, TouchableOpacity, Image, Dimensions,TouchableWithoutFeedback } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTimerSettings } from "../stores/useTimerSettings";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import * as Notifications from 'expo-notifications';
+import * as Haptics from 'expo-haptics';
+import { Audio} from 'expo-av';
+import Cyber13_1Mp3 from '../../../assets/sounds/Cyber13-1.mp3';
+
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -18,6 +22,21 @@ const TimerScreen = () => {
   const startTime= useRef<number>(Date.now());
   const pauseTime = useRef<number | null>(null);
   const timerInterval = useRef<NodeJS.Timeout | null>(null);
+  const vibrationInterval = useRef<NodeJS.Timeout | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
+  const hasScheduledNotification = useRef(false); 
+
+
+  
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true, // 追加（iOS用）
+    shouldShowList: true,   // 追加（iOS用）
+  }),
+});
 
   useEffect(() => {
     ScreenOrientation.unlockAsync();
@@ -28,29 +47,59 @@ const TimerScreen = () => {
     };
   }, []);
 
-  const startTimer = () => {
-    timerInterval.current = setInterval(() => {
-      const now = Date.now();
-      const elapsed = Math.floor((now - startTime.current - duration.current) / 1000);
-      const remaining = totalSeconds - elapsed;
+  const startTimer = async () => {
+  if (!hasScheduledNotification.current) {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "タイマー終了",
+        body: "設定した時間が経過しました。",
+        sound: false,
+        badge: 1,
+      },
+      trigger: {
+        seconds: totalSeconds,
+        type: "timeInterval",
+        repeats: false,
+      } as Notifications.TimeIntervalTriggerInput,
+    });
+    hasScheduledNotification.current = true;
+  }
 
-      if (remaining <= 0) {
-        setRemainingTime(0);
-        setIsRunning(false);
-        stopTimer();
-        Notifications.scheduleNotificationAsync({
-          content: {
-            title: "タイマー終了",
-            body: "設定した時間が経過しました。",
-          },
-          trigger: null, 
-        }).then(() => console.log("Notification scheduled"));
-        
-      } else {
-        setRemainingTime(remaining);
+  timerInterval.current = setInterval(async() => {
+    const now = Date.now();
+    const elapsed = Math.floor((now - startTime.current - duration.current) / 1000);
+    const remaining = totalSeconds - elapsed;
+
+    if (remaining <= 0) {
+      setRemainingTime(0);
+      setIsRunning(false);
+      stopTimer();
+
+      // await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      //   setTimeout(() => {
+      //   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      //   }, 50);
+      
+      vibrationInterval.current = setInterval(() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      }, 300);
+
+      const playSound = async () => {
+        const {sound } = await Audio.Sound.createAsync(
+          Cyber13_1Mp3,
+          { shouldPlay: true,
+            isLooping: true, // ループ再生
+           }
+        );
+        soundRef.current = sound;
+        await sound.playAsync();
       }
-    }, 50);
-  };
+      playSound();
+    } else {
+      setRemainingTime(remaining);
+    }
+  }, 50);
+};
 
 const stopTimer = () => {
   if (timerInterval.current) {
@@ -58,17 +107,52 @@ const stopTimer = () => {
     timerInterval.current = null;
   }
 };
+
+const stopVibration = () => {
+  if (vibrationInterval.current) {
+    clearInterval(vibrationInterval.current);
+    vibrationInterval.current = null;
+  }
+  if (soundRef.current) {
+    soundRef.current.stopAsync();
+    soundRef.current.unloadAsync();
+    soundRef.current = null;
+  }
+};  
   
-  const toggleRunning = () => {
+const toggleRunning = async () => {
   if (isRunning) {
     stopTimer();
     pauseTime.current = Date.now();
     setIsRunning(false);
+
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    hasScheduledNotification.current = false;
   } else {
     if (pauseTime.current) {
       duration.current +=  Date.now() - pauseTime.current;
       pauseTime.current = null;
     }
+
+    const now = Date.now();
+    const elapsed = Math.floor((now - startTime.current - duration.current) / 1000);
+    const remaining = totalSeconds - elapsed;
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "タイマー終了",
+        body: "タイマーが終了しました。",
+        sound:true,
+        badge: 1,
+      },
+      trigger:{
+        seconds:remaining - 0.25,
+        type: "timeInterval" as any, // 追加
+      },
+    })
+
+    hasScheduledNotification.current = true;
+
     startTimer();
     setIsRunning(true);
   }
@@ -84,6 +168,7 @@ const stopTimer = () => {
   };
 
   return (
+<TouchableWithoutFeedback onPress={stopVibration}>
     <View className="flex-1 items-center justify-between bg-black">
       {imageUri && ( // background image
         <Image
@@ -116,7 +201,10 @@ const stopTimer = () => {
       <View className="flex-row justify-between w-full">
         <TouchableOpacity // cancel button
           className="opacity-50"
-          onPress={() => router.push("../")}
+          onPress={async() =>{
+            await Notifications.cancelAllScheduledNotificationsAsync();
+            stopVibration() 
+            router.push("../")}}
         >
           <Text
             className="text-white"
@@ -155,7 +243,7 @@ const stopTimer = () => {
         </TouchableOpacity>
       </View>
     </View>
+  </TouchableWithoutFeedback>
   );
 };
-
 export default TimerScreen;
