@@ -15,6 +15,23 @@
       ]
     ],
     "name": "photoTimer2",
-    "slug": "photoTimer2"
+    "slug": "photoTimer2",
+    "android": {
+      "package": "com.anonymous.photoTimer2"
+    },
+    "extra": {
+      "router": {
+        "origin": "https://n"
+      },
+      "eas": {
+        "projectId": "b1897a4c-725f-4b17-ba37-6bce816e8f8f"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.ryu0402.photoTimer",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
   }
 }

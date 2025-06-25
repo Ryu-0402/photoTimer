@@ -4,9 +4,9 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTimerSettings } from "../stores/useTimerSettings";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import * as Notifications from 'expo-notifications';
-import * as Haptics from 'expo-haptics';
 import { Audio} from 'expo-av';
 import Cyber13_1Mp3 from '../../../assets/sounds/Cyber13-1.mp3';
+import { Vibration } from "react-native";
 
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -22,7 +22,6 @@ const TimerScreen = () => {
   const startTime= useRef<number>(Date.now());
   const pauseTime = useRef<number | null>(null);
   const timerInterval = useRef<NodeJS.Timeout | null>(null);
-  const vibrationInterval = useRef<NodeJS.Timeout | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
   const hasScheduledNotification = useRef(false); 
 
@@ -75,25 +74,19 @@ Notifications.setNotificationHandler({
       setIsRunning(false);
       stopTimer();
 
-      // await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      //   setTimeout(() => {
-      //   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      //   }, 50);
-      
-      vibrationInterval.current = setInterval(() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      }, 300);
-
       const playSound = async () => {
         const {sound } = await Audio.Sound.createAsync(
           Cyber13_1Mp3,
           { shouldPlay: true,
-            isLooping: true, // ループ再生
+            isLooping: true,
            }
         );
         soundRef.current = sound;
         await sound.playAsync();
       }
+      
+      Vibration.vibrate([200,300,1300,300,1300,300],false)
+
       playSound();
     } else {
       setRemainingTime(remaining);
@@ -108,11 +101,8 @@ const stopTimer = () => {
   }
 };
 
-const stopVibration = () => {
-  if (vibrationInterval.current) {
-    clearInterval(vibrationInterval.current);
-    vibrationInterval.current = null;
-  }
+const stopAlarm= () => { 
+  Vibration.cancel();
   if (soundRef.current) {
     soundRef.current.stopAsync();
     soundRef.current.unloadAsync();
@@ -142,12 +132,12 @@ const toggleRunning = async () => {
       content: {
         title: "タイマー終了",
         body: "タイマーが終了しました。",
-        sound:true,
+        sound:false,
         badge: 1,
       },
       trigger:{
-        seconds:remaining - 0.25,
-        type: "timeInterval" as any, // 追加
+        seconds:remaining - 0.3,
+        type: "timeInterval" as any,
       },
     })
 
@@ -168,7 +158,7 @@ const toggleRunning = async () => {
   };
 
   return (
-<TouchableWithoutFeedback onPress={stopVibration}>
+<TouchableWithoutFeedback onPress={stopAlarm}>
     <View className="flex-1 items-center justify-between bg-black">
       {imageUri && ( // background image
         <Image
@@ -203,7 +193,7 @@ const toggleRunning = async () => {
           className="opacity-50"
           onPress={async() =>{
             await Notifications.cancelAllScheduledNotificationsAsync();
-            stopVibration() 
+            stopAlarm() 
             router.push("../")}}
         >
           <Text
