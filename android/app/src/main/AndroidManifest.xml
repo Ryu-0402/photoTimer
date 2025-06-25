@@ -27,6 +27,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="acme"/>
+        <data android:scheme="exp+phototimer2"/>
       </intent-filter>
     </activity>
   </application>

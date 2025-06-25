@@ -4,6 +4,7 @@ import WheelPickerExpo from "react-native-wheel-picker-expo";
 import { useRouter } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as Notifications from "expo-notifications";
+import * as Haptics from "expo-haptics"
 
 const hours = Array.from({ length: 24 }, (_, i) => i);
 const minutes = Array.from({ length: 60 }, (_, i) => i);
@@ -70,7 +71,7 @@ const HomeScreen = () => {
           }}
         >
           <WheelPickerExpo
-            haptics={false}
+            haptics={true}
             backgroundColor="#000000"
             selectedStyle={{
               borderColor: "#00cc00",
@@ -80,10 +81,12 @@ const HomeScreen = () => {
             width={screenWidth * 0.25}
             initialSelectedIndex={0}
             items={hours.map((num) => ({ label: num.toString(), value: num }))}
-            onChange={({ index }: { index: number }) => setSelectedHour(index)}
+            onChange={({ index }: { index: number }) => {
+              setSelectedHour(index);
+            }}
           />
           <WheelPickerExpo
-            haptics={false}
+            haptics={true}
             backgroundColor="#000000"
             selectedStyle={{
               borderColor: "#00cc00",
@@ -96,12 +99,12 @@ const HomeScreen = () => {
               label: num.toString(),
               value: num,
             }))}
-            onChange={({ index }: { index: number }) =>
+            onChange={({ index }: { index: number }) =>{
               setSelectedMinute(index)
-            }
+            }}
           />
           <WheelPickerExpo
-            haptics={false}
+            haptics={true}
             backgroundColor="#000000"
             selectedStyle={{
               borderColor: "#00cc00",
@@ -114,9 +117,9 @@ const HomeScreen = () => {
               label: num.toString(),
               value: num,
             }))}
-            onChange={({ index }: { index: number }) =>
+            onChange={({ index }: { index: number }) =>{
               setSelectedSecond(index)
-            }
+            }}
           />
         </View>
       </View>
