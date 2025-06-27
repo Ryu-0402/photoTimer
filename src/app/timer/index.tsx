@@ -177,9 +177,9 @@ const toggleRunning = async () => {
         className=""
       >
         <Text
-          className=""
+          className="font-digital"
           style={{
-            fontSize: screenWidth * 0.23,
+            fontSize: screenWidth * 0.27,
             color: selectedColor,
             marginTop: screenHeight * 0.1,
           }}
@@ -220,8 +220,9 @@ const toggleRunning = async () => {
             </Text>
           ) : (
             <Text
-              className="text-green-400"
+              className=""
               style={{
+                color:"#00ff00",
                 fontSize: screenWidth * 0.08,
                 marginRight: screenWidth * 0.05,
                 marginBottom: screenHeight * 0.02,

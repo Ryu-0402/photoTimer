@@ -3,7 +3,11 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily:{
+        digital:["Digital7"],
+      },
+    },
   },
   future: {
     hoverOnlyWhenSupported: true,

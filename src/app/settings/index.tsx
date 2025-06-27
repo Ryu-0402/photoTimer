@@ -69,15 +69,19 @@ const settings = () => {
                         marginTop: screenHeight * 0.05,}}
                       onPress={() => router.push('../')}>
                       <Text 
-                       className='bg-transparent text-green-400'
-                       style={{fontSize:screenWidth*0.07}}>＜ 戻る</Text>
+                       className='bg-transparent'
+                       style={{
+                        fontSize:screenWidth*0.07,
+                        color:"#00ff00"
+                       }}>＜ 戻る</Text>
         </TouchableOpacity>
 
         <View // timer's appearance
         className='flex-row items-center justify-center'>
             <Text 
              style={{
-              fontSize: screenWidth*0.24, 
+              fontSize: screenWidth*0.27, 
+              fontFamily:"Digital7",
               color:selectedColor
               }}>{formatTime()}</Text>
        </View>

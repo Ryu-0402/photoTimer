@@ -14,11 +14,11 @@ export const useTimerSettings = create<TimerSettingsState>()(
     (set) => ({
       imageUri: null,
       setImageUri: (uri) => set({ imageUri: uri }),
-      selectedColor: '#FFFFFF',
+      selectedColor: '#00FF00',
       setSelectedColor: (color) => set({ selectedColor: color }),
     }),
     {
-      name: 'timer-settings-storage', // AsyncStorage に保存されるキー名
+      name: 'timer-settings-storage',
       storage: createJSONStorage<TimerSettingsState>(() => AsyncStorage), 
     }
   )

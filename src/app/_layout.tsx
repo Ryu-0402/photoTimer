@@ -1,23 +1,32 @@
-import { Text } from 'react-native';
-import {Stack} from "expo-router";
-import { StatusBar } from 'expo-status-bar';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import "../global.css";
 
-const Layout = () => (<>
-<Stack screenOptions={{ headerShown: false }}>
-  {/* <Stack.Screen
-    name="settings/index"
-    options={{
-      headerShown: true,
-        headerTitle: '',
-        headerStyle: { backgroundColor: 'black' },
-        headerTintColor: 'green',
-        headerBackTitle: '戻る',
-    }}
-  /> */}
-</Stack>
+import { useFonts } from "expo-font";
+import { useEffect } from "react";
+import * as SplashScreen from "expo-splash-screen";
 
-<StatusBar style="auto"/>
-</>);
+SplashScreen.preventAutoHideAsync();
+
+const Layout = () => {
+  const [fontsLoaded] = useFonts({
+    Digital7: require("../../assets/fonts/ds-digi.ttf"),
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
+
+  return (
+    <>
+      <Stack screenOptions={{ headerShown: false }} />
+      <StatusBar style="auto" />
+    </>
+  );
+};
 
 export default Layout;

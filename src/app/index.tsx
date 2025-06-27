@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as Notifications from "expo-notifications";
 import * as Haptics from "expo-haptics"
+import { green } from "react-native-reanimated/lib/typescript/Colors";
 
 const hours = Array.from({ length: 24 }, (_, i) => i);
 const minutes = Array.from({ length: 60 }, (_, i) => i);
@@ -74,7 +75,7 @@ const HomeScreen = () => {
             haptics={true}
             backgroundColor="#000000"
             selectedStyle={{
-              borderColor: "#00cc00",
+              borderColor: "#00ff00",
               borderWidth: 0.5,
             }}
             height={screenHeight * 0.5}
@@ -89,7 +90,7 @@ const HomeScreen = () => {
             haptics={true}
             backgroundColor="#000000"
             selectedStyle={{
-              borderColor: "#00cc00",
+              borderColor: "#00ff00",
               borderWidth: 0.5,
             }}
             height={screenHeight * 0.5}
@@ -107,7 +108,7 @@ const HomeScreen = () => {
             haptics={true}
             backgroundColor="#000000"
             selectedStyle={{
-              borderColor: "#00cc00",
+              borderColor: "#00ff00",
               borderWidth: 0.5,
             }}
             height={screenHeight * 0.5}
@@ -176,8 +177,10 @@ const HomeScreen = () => {
           }}
         >
           <Text 
-            className="text-green-400"
-            style={{fontSize:screenWidth * 0.12}}>開始</Text>
+            className="text-green-500"
+            style={{
+              fontSize:screenWidth * 0.12,
+              color:"#00ff00"}}>開始</Text>
         </TouchableOpacity>
       </View>
     </View>
