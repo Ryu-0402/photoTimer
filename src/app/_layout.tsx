@@ -1,3 +1,18 @@
+import * as Sentry from "@sentry/react-native";
+
+try{
+Sentry.init({
+  dsn:"https://5bb9de4cb127fef9592f2ef6312cfdda@o4509574011092992.ingest.us.sentry.io/4509574012207104",
+  debug:true,
+  enableNative:true,
+})
+} catch (error){
+  console.warn("sentry失敗",error)
+};
+
+
+// throw new Error("sentryエラーテスト")
+
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "../global.css";

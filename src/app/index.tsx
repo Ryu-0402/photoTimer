@@ -1,11 +1,9 @@
-import React, { useState,useEffect, use, useRef } from "react";
+import React, { useState,useEffect,useRef } from "react";
 import { Text, View, TouchableOpacity, Dimensions } from "react-native";
 import WheelPickerExpo from "react-native-wheel-picker-expo";
 import { useRouter } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as Notifications from "expo-notifications";
-import * as Haptics from "expo-haptics"
-import { green } from "react-native-reanimated/lib/typescript/Colors";
 
 const hours = Array.from({ length: 24 }, (_, i) => i);
 const minutes = Array.from({ length: 60 }, (_, i) => i);

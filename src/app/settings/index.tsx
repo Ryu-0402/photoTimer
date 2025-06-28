@@ -3,7 +3,7 @@ import { View,Text,TouchableOpacity,Image,Alert,Dimensions,TouchableWithoutFeedb
 import { useRouter,useLocalSearchParams } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import WheelColorPicker from 'react-native-wheel-color-picker';
-import { useTimerSettings } from '../stores/useTimerSettings';
+import { useTimerSettings } from '../../stores/useTimerSettings';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useNavigation } from 'expo-router';
 

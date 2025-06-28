@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Text, View, TouchableOpacity, Image, Dimensions,TouchableWithoutFeedback } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useTimerSettings } from "../stores/useTimerSettings";
+import { useTimerSettings } from "../../stores/useTimerSettings";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import * as Notifications from 'expo-notifications';
 import { Audio} from 'expo-av';
