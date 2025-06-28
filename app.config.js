@@ -22,6 +22,7 @@ export default ({ config }) => ({
     package: "com.anonymous.photoTimer2",
   },
   ios: {
+    buildNumber:"3",
     bundleIdentifier: "com.ryu0402.photoTimer",
     supportsTablet: true,
     infoPlist: {
